@@ -1,0 +1,14 @@
+$update_script = <<SCRIPT
+yum update -y
+rm /root/.bash_history
+rm /home/vagrant/.bash_history
+SCRIPT
+
+Vagrant.configure("2") do |config|
+	config.vm.box = "albmtez/centos7-x64-m"
+	config.ssh.insert_key = false
+	config.vm.provision "shell", inline: $update_script
+	config.vm.provider "virtualbox" do |vb|
+		vb.name = "centos7-x64-m"
+	end
+end
