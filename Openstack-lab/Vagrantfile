@@ -7,11 +7,11 @@
 ################################################################################
 
 # Script to provision the machine:
-# => - Packages update
-# => - Disable firewall and Network Manager
-# => - Install Openstack Queens reposiroty
-# => - Install Packstack repository
-# => - Install Openstack all components in one node
+# - Packages update
+# - Disable firewall and Network Manager
+# - Install Openstack Queens reposiroty
+# - Install Packstack repository
+# - Install Openstack all components in one node
 $provisioning_script = <<SCRIPT
 yum update -y
 
