@@ -1,0 +1,53 @@
+################################################################################
+# Openstack
+#
+# Installed in Centos 7 using Packstack.
+#
+# Install guide: https://www.rdoproject.org/install/packstack/
+################################################################################
+
+# Script to provision the machine:
+# => - Packages update
+# => - Disable firewall and Network Manager
+# => - Install Openstack Queens reposiroty
+# => - Install Packstack repository
+# => - Install Openstack all components in one node
+$provisioning_script = <<SCRIPT
+yum update -y
+
+echo "LANG=en_US.utf-8" >> /etc/environment
+echo "LC_ALL=en_US.utf-8" >> /etc/environment
+
+systemctl disable firewalld
+systemctl stop firewalld
+systemctl disable NetworkManager
+systemctl stop NetworkManager
+systemctl enable network
+systemctl start network
+
+yum install -y centos-release-openstack-queens
+yum update -y
+
+yum install -y openstack-packstack
+
+packstack --allinone
+SCRIPT
+
+Vagrant.configure("2") do |config|
+
+	# Based on Centos 7
+	config.vm.box = "albmtez/centos7-x64-l"
+	config.ssh.insert_key = false
+	config.vm.hostname = "openstack"
+	config.vm.network "private_network", ip: "10.0.0.10"
+	config.vm.provision "shell", inline: $provisioning_script
+
+	config.vm.provider "virtualbox" do |vb|
+		# Display the VirtualBox GUI when booting the machine
+		vb.gui = false
+		vb.name = "Openstack"
+		# Customize the amount of memory on the VM:
+		#vb.memory = 4096
+		#vb.cpus = 2
+	end
+end
