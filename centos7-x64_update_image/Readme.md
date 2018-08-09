@@ -14,5 +14,5 @@ Actions lanched:
 
 To launch the generation of the updated box launch the script:
 ```
-$ ./export_updated/image.sh
+$ ./export_updated_image.sh
 ```
