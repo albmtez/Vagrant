@@ -1,3 +1,11 @@
+################################################################################
+# centos7-x64-m_update_image
+#
+# Vagrantfile is used to automatically update packages in albmtez/centos7-x64-l
+# Vagrant box, in order to export it and release a new updated version to
+# Vagrant Cloud.
+################################################################################
+
 $update_script = <<SCRIPT
 yum update -y
 rm /root/.bash_history
