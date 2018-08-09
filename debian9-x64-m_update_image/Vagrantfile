@@ -1,0 +1,24 @@
+################################################################################
+# debian9-x64_update_image
+#
+# Vagrantfile is used to automatically update packages in albmtez/debian9-x64-m
+# Vagrant box, in order to export it and release a new updated version to
+# Vagrant Cloud.
+################################################################################
+
+$update_script = <<SCRIPT
+apt update
+apt upgrade -y
+apt autoremove -y
+rm /root/.bash_history
+rm /home/vagrant/.bash_history
+SCRIPT
+
+Vagrant.configure("2") do |config|
+	config.vm.box = "albmtez/debian9-x64-m"
+	config.ssh.insert_key = false
+	config.vm.provision "shell", inline: $update_script
+	config.vm.provider "virtualbox" do |vb|
+		vb.name = "debian9-x64-m"
+	end
+end
