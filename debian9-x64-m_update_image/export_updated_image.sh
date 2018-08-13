@@ -16,5 +16,5 @@ fi
 vagrant up
 vagrant vbguest
 vagrant halt
-vagrant package --base debian9-x64
+vagrant package --base debian9-x64-m
 vagrant destroy
