@@ -14,7 +14,6 @@ if [[ -f package.box ]]; then
 fi
 
 vagrant up
-vagrant vbguest
 vagrant halt
 vagrant package --base debian9-x64
 vagrant destroy
