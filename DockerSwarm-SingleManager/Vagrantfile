@@ -1,0 +1,91 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+################################################################################
+# DockerSwarm - SingleManager
+#
+# Docker Swarm with a single manager node.
+# Defaul number of worker nodes is 3 but can be customized by especifying the
+# desired number by the environment variable WORKERS or editting this file.
+################################################################################
+
+# You can configure the cluster editting the following values.
+# Numer of worker nodes. This value is overriden with WORKERS environment
+# variable's value if set.
+num_wrk_nodes = 3
+# Virtualbox settings for the manager node:
+#   - vCPU per VM.
+vm_man_cpu = 1
+#   - Memory (in KB) per VM.
+vm_man_mem = 512
+# Virtualbox settings for the worker nodes:
+#   - vCPU per VM.
+vm_wrk_cpu = 1
+#   - Memory (in KB) per VM.
+vm_wrk_mem = 512
+
+num_workers = ENV['WORKERS'] || num_wrk_nodes
+
+ip_count = 2
+
+man_name = "swarm-manager1"
+man_ip = "10.0.10.2"
+
+worker_nodes = []
+(1..num_workers).each do |n|
+    ip_count = ip_count + 1
+    worker_nodes.push(:name => "swarm-worker#{n}", :ip => "10.0.10.#{ip_count}")
+end
+
+File.open("./cluster_hosts", 'w') { |file|
+    file.write("\n\n# Swarm cluster nodes:\n")
+    file.write("#{man_ip} #{man_name} #{man_name}\n")
+    worker_nodes.each do |node|
+        file.write("#{node[:ip]} #{node[:name]} #{node[:name]}\n")
+    end
+}
+
+Vagrant.configure("2") do |config|
+
+    config.vm.define "#{man_name}" do |man|
+        man.vm.box = "albmtez/debian9-x64"
+        man.vm.hostname = "#{man_name}"
+        man.vm.network "private_network", ip: "#{man_ip}"
+
+        if File.file?("./cluster_hosts")
+            man.vm.provision "file", source: "cluster_hosts", destination: "/tmp/cluster_hosts"
+            man.vm.provision "shell", inline: "cat /tmp/cluster_hosts >> /etc/hosts", privileged: true
+        end
+
+        man.vm.provision "shell", path: "./provision_common.sh"
+
+        man.vm.provider "virtualbox" do |v|
+            v.gui = false
+            v.name = "#{man_name}"
+            v.cpus = vm_man_cpu
+            v.memory = vm_man_mem
+        end
+    end
+
+    worker_nodes.each do |node|
+        config.vm.define node[:name] do |i|
+            i.vm.box = "albmtez/debian9-x64"
+            i.vm.hostname = node[:name]
+            i.vm.network "private_network", ip: "#{node[:ip]}"
+
+            if File.file?("./cluster_hosts")
+                i.vm.provision "file", source: "cluster_hosts", destination: "/tmp/cluster_hosts"
+                i.vm.provision "shell", inline: "cat /tmp/cluster_hosts >> /etc/hosts", privileged: true
+            end
+
+            i.vm.provision "shell", path: "./provision_common.sh"
+
+            i.vm.provider "virtualbox" do |v|
+                v.gui = false
+                v.name = "#{node[:name]}"
+                v.cpus = vm_wrk_cpu
+                v.memory = vm_wrk_mem
+            end
+        end
+    end
+end
