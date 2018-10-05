@@ -11,8 +11,8 @@
 
 $update_script = <<SCRIPT
 yum update -y
-rm /root/.bash_history
-rm /home/vagrant/.bash_history
+rm -f /root/.bash_history
+rm -f /home/vagrant/.bash_history
 SCRIPT
 
 Vagrant.configure("2") do |config|
