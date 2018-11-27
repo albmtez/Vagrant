@@ -1,7 +1,5 @@
 # Vagrant
 
-[How to extend lvm size in a box](box-lvm-extend)
-
 Vagrant base boxes creation:
 - [debian9-create-base-box](debian9-create-base-box)
 - [centos7-create-base-box](centos7-create-base-box)
@@ -16,3 +14,5 @@ Vagrant boxes updating:
 
 Openstack:
 - [Openstack-lab](Openstack-lab): Single VM Openstack.
+
+[How to extend lvm size in a box](box-lvm-extend)
